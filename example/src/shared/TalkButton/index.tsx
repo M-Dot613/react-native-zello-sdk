@@ -59,10 +59,10 @@ const TalkButton = ({ contact, disabled }: TalkButtonProps) => {
           {isOutgoingMessageSending()
             ? 'Sending'
             : isOutgoingMessageConnecting()
-              ? 'Connecting'
-              : isIncomingMessageReceiving()
-                ? 'Receiving'
-                : 'PTT'}
+            ? 'Connecting'
+            : isIncomingMessageReceiving()
+            ? 'Receiving'
+            : 'PTT'}
         </Text>
       </View>
     </TouchableOpacity>

@@ -13,21 +13,21 @@ import {
   LastIncomingTextMessageContext,
   RecentsContext,
   SdkContext,
-} from '../App';
-import ConnectModal from '../shared/ConnectModal';
+} from '../../App';
+import ConnectModal from '../../shared/ConnectModal';
 import {
   ZelloAccountStatus,
   ZelloRecentEntry,
 } from '@zelloptt/react-native-zello-sdk';
-import StatusDialog from '../shared/StatusDialog';
-import useNavigationOptions from '../shared/hooks/useNavigationOptions';
+import StatusDialog from '../../shared/StatusDialog';
+import useNavigationOptions from '../../shared/hooks/useNavigationOptions';
 // @ts-ignore
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import IncomingImageDialog from '../shared/IncomingImageDialog';
-import IncomingAlertDialog from '../shared/IncomingAlertDialog';
-import IncomingTextDialog from '../shared/IncomingTextDialog';
-import IncomingLocationDialog from '../shared/IncomingLocationDialog';
-import useMessageTitle from '../shared/hooks/useMessageTitle';
+import IncomingImageDialog from '../../shared/IncomingImageDialog';
+import IncomingAlertDialog from '../../shared/IncomingAlertDialog';
+import IncomingTextDialog from '../../shared/IncomingTextDialog';
+import IncomingLocationDialog from '../../shared/IncomingLocationDialog';
+import useMessageTitle from '../../shared/hooks/useMessageTitle';
 
 interface RecentViewProps {
   recent: ZelloRecentEntry;

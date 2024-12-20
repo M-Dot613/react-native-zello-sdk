@@ -105,9 +105,9 @@ const GroupConversationView = React.memo(
             {isConnected
               ? `Users Online: ${conversation.usersOnline}`
               : conversation.connectionStatus ===
-                  ZelloChannelConnectionStatus.Connecting
-                ? 'Connecting'
-                : 'Disconnected'}
+                ZelloChannelConnectionStatus.Connecting
+              ? 'Connecting'
+              : 'Disconnected'}
           </Text>
           {isReceiving() && (
             <Text>{`Talking: ${incomingVoiceMessage?.channelUser?.displayName}`}</Text>

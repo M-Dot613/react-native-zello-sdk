@@ -14,8 +14,8 @@ const ConnectButton = ({ onClick }: ConnectButtonProps) => {
       {connectionContext.isConnecting
         ? 'Connecting'
         : connectionContext.isConnected
-          ? 'Disconnect'
-          : 'Connect'}
+        ? 'Disconnect'
+        : 'Connect'}
     </Text>
   );
 };

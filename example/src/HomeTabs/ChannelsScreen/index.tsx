@@ -19,9 +19,9 @@ import {
   LastIncomingTextMessageContext,
   SdkContext,
   SelectedContactContext,
-} from '../App';
-import TalkButton from '../shared/TalkButton';
-import ConnectModal from '../shared/ConnectModal';
+} from '../../App';
+import TalkButton from '../../shared/TalkButton';
+import ConnectModal from '../../shared/ConnectModal';
 import {
   ZelloAccountStatus,
   ZelloChannel,
@@ -30,16 +30,16 @@ import {
   ZelloDispatchCallStatus,
   ZelloHistoryMessage,
 } from '@zelloptt/react-native-zello-sdk';
-import StatusDialog from '../shared/StatusDialog';
-import useNavigationOptions from '../shared/hooks/useNavigationOptions';
-import ContextMenuButton from '../shared/ContextMenuButton';
-import IncomingImageDialog from '../shared/IncomingImageDialog';
-import IncomingAlertDialog from '../shared/IncomingAlertDialog';
-import IncomingLocationDialog from '../shared/IncomingLocationDialog';
-import IncomingTextDialog from '../shared/IncomingTextDialog';
-import OutgoingTextDialog from '../shared/OutgoingTextDialog';
-import OutgoingAlertDialog from '../shared/OutgoingAlertDialog';
-import HistoryDialog from '../shared/HistoryDialog';
+import StatusDialog from '../../shared/StatusDialog';
+import useNavigationOptions from '../../shared/hooks/useNavigationOptions';
+import ContextMenuButton from '../../shared/ContextMenuButton';
+import IncomingImageDialog from '../../shared/IncomingImageDialog';
+import IncomingAlertDialog from '../../shared/IncomingAlertDialog';
+import IncomingLocationDialog from '../../shared/IncomingLocationDialog';
+import IncomingTextDialog from '../../shared/IncomingTextDialog';
+import OutgoingTextDialog from '../../shared/OutgoingTextDialog';
+import OutgoingAlertDialog from '../../shared/OutgoingAlertDialog';
+import HistoryDialog from '../../shared/HistoryDialog';
 import { isSameContact } from '@zelloptt/react-native-zello-sdk';
 
 interface ChannelViewProps {
@@ -146,15 +146,17 @@ const ChannelView = React.memo(
             {isConnected
               ? `Users Online: ${channel.usersOnline}`
               : channel.connectionStatus ===
-                  ZelloChannelConnectionStatus.Connecting
-                ? 'Connecting'
-                : 'Disconnected'}
+                ZelloChannelConnectionStatus.Connecting
+              ? 'Connecting'
+              : 'Disconnected'}
           </Text>
           {isReceiving() && (
             <Text>{`Talking: ${incomingVoiceMessage?.channelUser?.displayName}`}</Text>
           )}
           {getIncomingEmergency() && (
-            <Text>{`ACTIVE INCOMING EMERGENCY: ${getIncomingEmergency()?.channelUser.displayName}`}</Text>
+            <Text>{`ACTIVE INCOMING EMERGENCY: ${
+              getIncomingEmergency()?.channelUser.displayName
+            }`}</Text>
           )}
           {isOutgoingEmergency() && <Text>ACTIVE OUTGOING EMERGENCY</Text>}
           {getCall() && (

@@ -1,1 +1,10 @@
 src/docs
+# Ignore all JavaScript files
+
+*.js
+*.tsx
+
+
+# Ignore specific files
+
+src/someFile.js

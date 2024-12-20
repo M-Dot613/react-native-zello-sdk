@@ -1,8 +1,9 @@
 # Getting Started
 
->**Note**: Make sure you have completed the [React Native - Environment Setup](https://reactnative.dev/docs/set-up-your-environment) instructions before proceeding.
+> **Note**: Make sure you have completed the [React Native - Environment Setup](https://reactnative.dev/docs/set-up-your-environment) instructions before proceeding.
 
 ## Install Dependencies
+
 ```
 # Navigate to the project root
 cd ..
@@ -38,6 +39,7 @@ yarn android
 ### For iOS
 
 Install the dependencies:
+
 ```bash
 cd ios
 pod install

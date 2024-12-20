@@ -16,9 +16,9 @@ import {
   SdkContext,
   SelectedContactContext,
   UsersContext,
-} from '../App';
-import TalkButton from '../shared/TalkButton';
-import ConnectModal from '../shared/ConnectModal';
+} from '../../App';
+import TalkButton from '../../shared/TalkButton';
+import ConnectModal from '../../shared/ConnectModal';
 import {
   isSameContact,
   ZelloAccountStatus,
@@ -26,17 +26,17 @@ import {
   ZelloUser,
   ZelloUserStatus,
 } from '@zelloptt/react-native-zello-sdk';
-import StatusDialog from '../shared/StatusDialog';
-import useNavigationOptions from '../shared/hooks/useNavigationOptions';
-import ContextMenuButton from '../shared/ContextMenuButton';
-import IncomingImageDialog from '../shared/IncomingImageDialog';
-import IncomingAlertDialog from '../shared/IncomingAlertDialog';
-import IncomingLocationDialog from '../shared/IncomingLocationDialog';
-import IncomingTextDialog from '../shared/IncomingTextDialog';
-import OutgoingTextDialog from '../shared/OutgoingTextDialog';
-import OutgoingAlertDialog from '../shared/OutgoingAlertDialog';
-import HistoryDialog from '../shared/HistoryDialog';
-import ProfilePicture from '../shared/ProfilePicture';
+import StatusDialog from '../../shared/StatusDialog';
+import useNavigationOptions from '../../shared/hooks/useNavigationOptions';
+import ContextMenuButton from '../../shared/ContextMenuButton';
+import IncomingImageDialog from '../../shared/IncomingImageDialog';
+import IncomingAlertDialog from '../../shared/IncomingAlertDialog';
+import IncomingLocationDialog from '../../shared/IncomingLocationDialog';
+import IncomingTextDialog from '../../shared/IncomingTextDialog';
+import OutgoingTextDialog from '../../shared/OutgoingTextDialog';
+import OutgoingAlertDialog from '../../shared/OutgoingAlertDialog';
+import HistoryDialog from '../../shared/HistoryDialog';
+import ProfilePicture from '../../shared/ProfilePicture';
 
 interface UserViewProps {
   user: ZelloUser;
