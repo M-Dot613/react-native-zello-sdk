@@ -201,13 +201,16 @@ export default function App() {
       }
     );
     sdk.addListener(ZelloEvent.CONNECT_STARTED, () => {
+      console.log('Connecting');
       setIsConnecting(true);
     });
     sdk.addListener(ZelloEvent.CONNECT_SUCCEEDED, () => {
+      console.log('Connected');
       setIsConnecting(false);
       setIsConnected(true);
     });
     sdk.addListener(ZelloEvent.DISCONNECTED, () => {
+      console.log('Disconnected');
       setIsConnected(false);
     });
     sdk.addListener(ZelloEvent.CONTACT_LIST_UPDATED, () => {
@@ -422,6 +425,7 @@ export default function App() {
                                             value={consoleSettings}
                                           >
                                             <AppNavigator />
+                                            <Toast config={{type: 'success'}} />
                                           </ConsoleSettingsContext.Provider>
                                         </HistoryVoiceMessageContext.Provider>
                                       </HistoryContext.Provider>
@@ -441,7 +445,7 @@ export default function App() {
           </ConnectionContext.Provider>
         </SdkContext.Provider>
       </MenuProvider>
-      <Toast />
+
     </>
   );
 }

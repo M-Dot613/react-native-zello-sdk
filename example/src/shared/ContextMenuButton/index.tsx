@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Icon } from 'react-native-paper';
+import Ionicon from 'react-native-vector-icons/Ionicons';
 import {
   Menu,
   MenuOptions,
@@ -57,7 +57,7 @@ const ContextMenuButton = ({
     <View style={styles.container}>
       <Menu>
         <MenuTrigger>
-          <Icon size={24} source="dots-horizontal" />
+          <Ionicon name="ellipsis-vertical" size={24} color="#000" />
         </MenuTrigger>
         <MenuOptions>
           {showSendImageOption && (
