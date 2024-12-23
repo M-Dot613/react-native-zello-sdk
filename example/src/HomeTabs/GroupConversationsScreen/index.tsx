@@ -18,25 +18,25 @@ import {
   LastIncomingTextMessageContext,
   SdkContext,
   SelectedContactContext,
-} from '../App';
-import TalkButton from '../shared/TalkButton';
-import ConnectModal from '../shared/ConnectModal';
+} from '../../App';
+import TalkButton from '../../shared/TalkButton';
+import ConnectModal from '../../shared/ConnectModal';
 import {
   ZelloAccountStatus,
   ZelloChannelConnectionStatus,
   ZelloGroupConversation,
   ZelloHistoryMessage,
 } from '@zelloptt/react-native-zello-sdk';
-import StatusDialog from '../shared/StatusDialog';
-import useNavigationOptions from '../shared/hooks/useNavigationOptions';
-import ContextMenuButton from '../shared/ContextMenuButton';
-import IncomingImageDialog from '../shared/IncomingImageDialog';
-import IncomingAlertDialog from '../shared/IncomingAlertDialog';
-import IncomingLocationDialog from '../shared/IncomingLocationDialog';
-import IncomingTextDialog from '../shared/IncomingTextDialog';
-import OutgoingTextDialog from '../shared/OutgoingTextDialog';
-import OutgoingAlertDialog from '../shared/OutgoingAlertDialog';
-import HistoryDialog from '../shared/HistoryDialog';
+import StatusDialog from '../../shared/StatusDialog';
+import useNavigationOptions from '../../shared/hooks/useNavigationOptions';
+import ContextMenuButton from '../../shared/ContextMenuButton';
+import IncomingImageDialog from '../../shared/IncomingImageDialog';
+import IncomingAlertDialog from '../../shared/IncomingAlertDialog';
+import IncomingLocationDialog from '../../shared/IncomingLocationDialog';
+import IncomingTextDialog from '../../shared/IncomingTextDialog';
+import OutgoingTextDialog from '../../shared/OutgoingTextDialog';
+import OutgoingAlertDialog from '../../shared/OutgoingAlertDialog';
+import HistoryDialog from '../../shared/HistoryDialog';
 import { isSameContact } from '@zelloptt/react-native-zello-sdk';
 import CreateGroupConversationDialog from './CreateGroupConversationDialog';
 import AddUsersToGroupConversationDialog from './AddUsersToGroupConversationDialog';

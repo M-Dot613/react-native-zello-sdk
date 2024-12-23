@@ -1,17 +1,7 @@
-import React, {
-  createContext,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
-import { Platform } from 'react-native';
-import {
-  PERMISSIONS,
-  request,
-  requestNotifications,
-} from 'react-native-permissions';
-import AppNavigator from './AppNavigator';
+import React, { createContext, useCallback, useEffect, useRef, useState } from "react";
+import { Platform } from "react-native";
+import { PERMISSIONS, request, requestNotifications } from "react-native-permissions";
+import AppNavigator from "./AppNavigator";
 import Zello, {
   ZelloAccountStatus,
   ZelloAlertMessage,
@@ -34,10 +24,12 @@ import Zello, {
   ZelloEvent,
   ZelloGroupConversation,
   ZelloConsoleSettings,
-} from '@zelloptt/react-native-zello-sdk';
+} from "@zelloptt/react-native-zello-sdk";
 
-import { MenuProvider } from 'react-native-popup-menu';
-import Toast from 'react-native-toast-message';
+import { MenuProvider } from "react-native-popup-menu";
+import Toast from "react-native-toast-message";
+import { KeyEventProvider } from "./context/KeyEventContext";
+import { NavigationBarProvider } from "./context/NavigationBarContext";
 
 const sdk = Zello.getInstance();
 export const SdkContext = createContext<Zello>(sdk);
@@ -47,21 +39,11 @@ export const ConnectionContext = createContext({
 });
 export const UsersContext = createContext<ZelloUser[]>([]);
 export const ChannelsContext = createContext<ZelloChannel[]>([]);
-export const GroupConversationsContext = createContext<
-  ZelloGroupConversation[]
->([]);
-export const SelectedContactContext = createContext<ZelloContact | undefined>(
-  undefined
-);
-export const AccountStatusContext = createContext<
-  ZelloAccountStatus | undefined
->(undefined);
-export const IncomingVoiceMessageContext = createContext<
-  ZelloIncomingVoiceMessage | undefined
->(undefined);
-export const OutgoingVoiceMessageContext = createContext<
-  ZelloOutgoingVoiceMessage | undefined
->(undefined);
+export const GroupConversationsContext = createContext<ZelloGroupConversation[]>([]);
+export const SelectedContactContext = createContext<ZelloContact | undefined>(undefined);
+export const AccountStatusContext = createContext<ZelloAccountStatus | undefined>(undefined);
+export const IncomingVoiceMessageContext = createContext<ZelloIncomingVoiceMessage | undefined>(undefined);
+export const OutgoingVoiceMessageContext = createContext<ZelloOutgoingVoiceMessage | undefined>(undefined);
 
 export const LastIncomingImageMessageContext = createContext<{
   message?: ZelloImageMessage;
@@ -99,45 +81,24 @@ export const HistoryContext = createContext<{
   setHistory?: (contact: ZelloContact, messages: ZelloHistoryMessage[]) => void;
 }>({});
 
-export const HistoryVoiceMessageContext = createContext<
-  ZelloHistoryVoiceMessage | undefined
->(undefined);
+export const HistoryVoiceMessageContext = createContext<ZelloHistoryVoiceMessage | undefined>(undefined);
 
-export const ConsoleSettingsContext = createContext<
-  ZelloConsoleSettings | undefined
->(undefined);
+export const ConsoleSettingsContext = createContext<ZelloConsoleSettings | undefined>(undefined);
 
 export default function App() {
   const [isConnected, setIsConnected] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
   const [users, setUsers] = useState<ZelloUser[]>([]);
   const [channels, setChannels] = useState<ZelloChannel[]>([]);
-  const [groupConversations, setGroupConversations] = useState<
-    ZelloGroupConversation[]
-  >([]);
-  const [selectedContact, setSelectedContact] = useState<
-    ZelloContact | undefined
-  >(undefined);
-  const [accountStatus, setAccountStatus] = useState<
-    ZelloAccountStatus | undefined
-  >(undefined);
-  const [incomingAudioMessage, setIncomingAudioMessage] = useState<
-    ZelloIncomingVoiceMessage | undefined
-  >(undefined);
-  const [outgoingAudioMessage, setOutgoingAudioMessage] = useState<
-    ZelloOutgoingVoiceMessage | undefined
-  >(undefined);
-  const [lastIncomingImageMessage, setLastIncomingImageMessage] = useState<
-    ZelloImageMessage | undefined
-  >(undefined);
-  const [lastIncomingAlertMessage, setLastIncomingAlertMessage] = useState<
-    ZelloAlertMessage | undefined
-  >(undefined);
-  const [lastIncomingTextMessage, setLastIncomingTextMessage] = useState<
-    ZelloTextMessage | undefined
-  >(undefined);
-  const [lastIncomingLocationMessage, setLastIncomingLocationMessage] =
-    useState<ZelloLocationMessage | undefined>(undefined);
+  const [groupConversations, setGroupConversations] = useState<ZelloGroupConversation[]>([]);
+  const [selectedContact, setSelectedContact] = useState<ZelloContact | undefined>(undefined);
+  const [accountStatus, setAccountStatus] = useState<ZelloAccountStatus | undefined>(undefined);
+  const [incomingAudioMessage, setIncomingAudioMessage] = useState<ZelloIncomingVoiceMessage | undefined>(undefined);
+  const [outgoingAudioMessage, setOutgoingAudioMessage] = useState<ZelloOutgoingVoiceMessage | undefined>(undefined);
+  const [lastIncomingImageMessage, setLastIncomingImageMessage] = useState<ZelloImageMessage | undefined>(undefined);
+  const [lastIncomingAlertMessage, setLastIncomingAlertMessage] = useState<ZelloAlertMessage | undefined>(undefined);
+  const [lastIncomingTextMessage, setLastIncomingTextMessage] = useState<ZelloTextMessage | undefined>(undefined);
+  const [lastIncomingLocationMessage, setLastIncomingLocationMessage] = useState<ZelloLocationMessage | undefined>(undefined);
   const [emergency, setEmergency] = useState<{
     incomingEmergencies: ZelloIncomingEmergency[];
     outgoingEmergency?: ZelloOutgoingEmergency;
@@ -151,23 +112,19 @@ export default function App() {
     | undefined
   >(undefined);
   const historyRef = useRef(history);
-  const [historyVoiceMessage, setHistoryVoiceMessage] = useState<
-    ZelloHistoryVoiceMessage | undefined
-  >(undefined);
-  const [consoleSettings, setConsoleSettings] = useState<
-    ZelloConsoleSettings | undefined
-  >(undefined);
+  const [historyVoiceMessage, setHistoryVoiceMessage] = useState<ZelloHistoryVoiceMessage | undefined>(undefined);
+  const [consoleSettings, setConsoleSettings] = useState<ZelloConsoleSettings | undefined>(undefined);
 
   const showToast = (text: string) => {
     Toast.show({
-      type: 'error',
+      type: "error",
       text1: text,
       visibilityTime: 5000,
     });
   };
 
   useEffect(() => {
-    if (Platform.OS === 'android') {
+    if (Platform.OS === "android") {
       request(PERMISSIONS.ANDROID.POST_NOTIFICATIONS).then(() => {
         request(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION).then(() => {
           request(PERMISSIONS.ANDROID.RECORD_AUDIO);
@@ -175,7 +132,7 @@ export default function App() {
       });
     } else {
       request(PERMISSIONS.IOS.MICROPHONE).then(() => {
-        requestNotifications(['alert', 'sound', 'badge']).then(() => {
+        requestNotifications(["alert", "sound", "badge"]).then(() => {
           request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE).then(() => {
             request(PERMISSIONS.IOS.BLUETOOTH);
           });
@@ -189,28 +146,23 @@ export default function App() {
       },
       ios: {
         isDebugBuild: true,
-        appGroup: 'group.com.companyname.ZelloSDKReactNativeSampleApp.shared',
+        appGroup: "group.com.companyname.ZelloSDKReactNativeSampleApp.shared",
       },
     });
 
-    sdk.addListener(
-      ZelloEvent.CONNECT_FAILED,
-      (_state: ZelloConnectionState, error: ZelloConnectionError) => {
-        showToast(`Connection failed: ${error}`);
-        setIsConnecting(false);
-      }
-    );
+    sdk.addListener(ZelloEvent.CONNECT_FAILED, (_state: ZelloConnectionState, error: ZelloConnectionError) => {
+      showToast(`Connection failed: ${error}`);
+      setIsConnecting(false);
+    });
     sdk.addListener(ZelloEvent.CONNECT_STARTED, () => {
-      console.log('Connecting');
       setIsConnecting(true);
     });
     sdk.addListener(ZelloEvent.CONNECT_SUCCEEDED, () => {
-      console.log('Connected');
       setIsConnecting(false);
       setIsConnected(true);
     });
     sdk.addListener(ZelloEvent.DISCONNECTED, () => {
-      console.log('Disconnected');
+      console.log("Disconnected");
       setIsConnected(false);
     });
     sdk.addListener(ZelloEvent.CONTACT_LIST_UPDATED, () => {
@@ -236,53 +188,35 @@ export default function App() {
     sdk.addListener(ZelloEvent.OUTGOING_VOICE_MESSAGE_STARTED, () => {
       setOutgoingAudioMessage(sdk.outgoingVoiceMessage);
     });
-    sdk.addListener(
-      ZelloEvent.OUTGOING_VOICE_MESSAGE_STOPPED,
-      (
-        _message: ZelloOutgoingVoiceMessage,
-        error: ZelloOutgoingVoiceMessageError | undefined
-      ) => {
-        if (error) {
-          showToast(`Outgoing voice message error: ${error}`);
-        }
-        setOutgoingAudioMessage(sdk.outgoingVoiceMessage);
+    sdk.addListener(ZelloEvent.OUTGOING_VOICE_MESSAGE_STOPPED, (_message: ZelloOutgoingVoiceMessage, error: ZelloOutgoingVoiceMessageError | undefined) => {
+      if (error) {
+        showToast(`Outgoing voice message error: ${error}`);
       }
-    );
-    sdk.addListener(
-      ZelloEvent.INCOMING_IMAGE_MESSAGE_RECEIVED,
-      (message: ZelloImageMessage) => {
-        setLastIncomingImageMessage(message);
-      }
-    );
+      setOutgoingAudioMessage(sdk.outgoingVoiceMessage);
+    });
+    sdk.addListener(ZelloEvent.INCOMING_IMAGE_MESSAGE_RECEIVED, (message: ZelloImageMessage) => {
+      setLastIncomingImageMessage(message);
+    });
     sdk.addListener(ZelloEvent.OUTGOING_IMAGE_MESSAGE_SEND_FAILED, () => {
-      showToast('Failed to send image');
+      showToast("Failed to send image");
     });
-    sdk.addListener(
-      ZelloEvent.INCOMING_ALERT_MESSAGE_RECEIVED,
-      (message: ZelloAlertMessage) => {
-        setLastIncomingAlertMessage(message);
-      }
-    );
+    sdk.addListener(ZelloEvent.INCOMING_ALERT_MESSAGE_RECEIVED, (message: ZelloAlertMessage) => {
+      setLastIncomingAlertMessage(message);
+    });
     sdk.addListener(ZelloEvent.OUTGOING_ALERT_MESSAGE_SEND_FAILED, () => {
-      showToast('Failed to send alert');
+      showToast("Failed to send alert");
     });
-    sdk.addListener(
-      ZelloEvent.INCOMING_TEXT_MESSAGE_RECEIVED,
-      (message: ZelloTextMessage) => {
-        setLastIncomingTextMessage(message);
-      }
-    );
+    sdk.addListener(ZelloEvent.INCOMING_TEXT_MESSAGE_RECEIVED, (message: ZelloTextMessage) => {
+      setLastIncomingTextMessage(message);
+    });
     sdk.addListener(ZelloEvent.OUTGOING_TEXT_MESSAGE_SEND_FAILED, () => {
-      showToast('Failed to send text');
+      showToast("Failed to send text");
     });
-    sdk.addListener(
-      ZelloEvent.INCOMING_LOCATION_MESSAGE_RECEIVED,
-      (message: ZelloLocationMessage) => {
-        setLastIncomingLocationMessage(message);
-      }
-    );
+    sdk.addListener(ZelloEvent.INCOMING_LOCATION_MESSAGE_RECEIVED, (message: ZelloLocationMessage) => {
+      setLastIncomingLocationMessage(message);
+    });
     sdk.addListener(ZelloEvent.OUTGOING_LOCATION_MESSAGE_SEND_FAILED, () => {
-      showToast('Failed to send location');
+      showToast("Failed to send location");
     });
     sdk.addListener(ZelloEvent.INCOMING_EMERGENCY_STARTED, () => {
       setEmergency({
@@ -378,12 +312,8 @@ export default function App() {
                 <GroupConversationsContext.Provider value={groupConversations}>
                   <SelectedContactContext.Provider value={selectedContact}>
                     <AccountStatusContext.Provider value={accountStatus}>
-                      <IncomingVoiceMessageContext.Provider
-                        value={incomingAudioMessage}
-                      >
-                        <OutgoingVoiceMessageContext.Provider
-                          value={outgoingAudioMessage}
-                        >
+                      <IncomingVoiceMessageContext.Provider value={incomingAudioMessage}>
+                        <OutgoingVoiceMessageContext.Provider value={outgoingAudioMessage}>
                           <LastIncomingImageMessageContext.Provider
                             value={{
                               message: lastIncomingImageMessage,
@@ -405,8 +335,7 @@ export default function App() {
                                 <LastIncomingLocationMessageContext.Provider
                                   value={{
                                     message: lastIncomingLocationMessage,
-                                    clearMessage:
-                                      clearLastIncomingLocationMessage,
+                                    clearMessage: clearLastIncomingLocationMessage,
                                   }}
                                 >
                                   <EmergencyContext.Provider value={emergency}>
@@ -418,14 +347,14 @@ export default function App() {
                                           setHistory: addHistory,
                                         }}
                                       >
-                                        <HistoryVoiceMessageContext.Provider
-                                          value={historyVoiceMessage}
-                                        >
-                                          <ConsoleSettingsContext.Provider
-                                            value={consoleSettings}
-                                          >
-                                            <AppNavigator />
-                                            <Toast config={{type: 'success'}} />
+                                        <HistoryVoiceMessageContext.Provider value={historyVoiceMessage}>
+                                          <ConsoleSettingsContext.Provider value={consoleSettings}>
+                                            <NavigationBarProvider>
+                                              <KeyEventProvider>
+                                                <AppNavigator />
+                                              </KeyEventProvider>
+                                            </NavigationBarProvider>
+                                            {/* <Toast/> */}
                                           </ConsoleSettingsContext.Provider>
                                         </HistoryVoiceMessageContext.Provider>
                                       </HistoryContext.Provider>
@@ -445,7 +374,6 @@ export default function App() {
           </ConnectionContext.Provider>
         </SdkContext.Provider>
       </MenuProvider>
-
     </>
   );
 }

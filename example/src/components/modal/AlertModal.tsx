@@ -4,16 +4,17 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 
 interface AlertModalProps {
   channel: string;
+  count: number;
 }
 
-const AlertModal: React.FC<AlertModalProps> = ({ channel }) => {
+const AlertModal: React.FC<AlertModalProps> = ({ channel, count }) => {
   return (
     <View style={styles.centeredView}>
       <View style={styles.modalView}>
         <Ionicons name="warning-outline" size={50} color="#ff4d4d" />
         <Text style={styles.modalText}>Sending Alert to:</Text>
-        <Text style={styles.modalText}>{channel}</Text>
-        <Text style={styles.modalText}>3</Text>
+        <Text style={styles.modalText}>00 - Dispatch</Text>
+        <Text style={styles.modalText}>{count}</Text>
       </View>
     </View>
   );

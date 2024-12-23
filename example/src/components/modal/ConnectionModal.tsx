@@ -1,19 +1,38 @@
-import React, { useCallback, useState } from "react";
-import { Modal, StyleSheet, Text, TextInput, View, TouchableOpacity } from "react-native";
+import React, { useCallback, useEffect, useState } from "react";
+import {  StyleSheet, Text, TextInput, View, } from "react-native";
 import TouchInput from "../TouchInput";
+import { useNavigationBar } from "../../context/NavigationBarContext";
+import { useKeyEvent } from "../../context/KeyEventContext";
+import { useFocusEffect } from "@react-navigation/native";
 
 interface ConnectDialogProps {
-  onClose: () => void;
   onConnect: (username: string, password: string, network: string) => void;
-  visible: boolean;
 }
 
-const ConnectionModal: React.FC<ConnectDialogProps> = ({ visible, onClose, onConnect }) => {
+const ConnectionModal: React.FC<ConnectDialogProps> = ({ onConnect }) => {
+  // const { resetNav, setNav } = useNavigationBar();
+  const { keyEvent } = useKeyEvent();
+
   const [credentials, setCredentials] = useState({
     username: "PA-25",
     password: "MwNLFn4s",
     network: "chaverimofnepa",
   });
+
+    useFocusEffect(
+      useCallback(() => {
+        console.log("Focused ConnectionModal");
+        return () => {
+          console.log("Unfocused ConnectionModal");
+        };
+      }, [])
+    );
+
+  useEffect(() => {
+    if (keyEvent === 295) {
+      handleConnect();
+    }
+  }, [keyEvent]);
 
   const handleInputChange = (field: string, value: string) => {
     setCredentials((prev) => ({ ...prev, [field]: value }));
@@ -27,38 +46,38 @@ const ConnectionModal: React.FC<ConnectDialogProps> = ({ visible, onClose, onCon
   const handleConnect = () => {
     const { username, password, network } = credentials;
     onConnect(username, password, network);
-    onClose();
   };
 
   return (
-    <Modal animationType="slide" transparent={true} visible={visible} onRequestClose={onClose}>
-      <View style={styles.centeredView}>
-        <View style={styles.modalView}>
-          <Text style={styles.modalText}>Connect</Text>
-          <TouchInput title="Username" value={credentials.username} onChangeText={(value) => handleInputChange("username", value)} />
-          <TouchInput title="Password" value={credentials.password} onChangeText={(value) => handleInputChange("password", value)} secureTextEntry />
-          <TouchInput title="Network" value={credentials.network} onChangeText={(value) => handleInputChange("network", value)} />
+    <View style={styles.centeredView}>
+      <View style={styles.modalView}>
+        <Text style={styles.modalText}>Deprecated</Text>
+        <TouchInput title="Username" value={credentials.username} onChangeText={(value) => handleInputChange("username", value)} />
+        <TouchInput title="Password" value={credentials.password} onChangeText={(value) => handleInputChange("password", value)} secureTextEntry />
+        <TouchInput title="Network" value={credentials.network} onChangeText={(value) => handleInputChange("network", value)} />
 
-          <View style={styles.buttonContainer}>
-            {/* <TouchableOpacity onPress={onClose} style={[styles.button, styles.cancelButton]}>
+        {/* <View style={styles.buttonContainer}>
+          <TouchableOpacity onPress={onClose} style={[styles.button, styles.cancelButton]}>
               <Text style={styles.buttonText}>Cancel</Text>
-            </TouchableOpacity> */}
-            <TouchableOpacity
+            </TouchableOpacity>
+          <TouchableOpacity
               onPress={handleConnect}
               style={[styles.button, styles.connectButton, !isValidCredentials() && styles.disabledButton]}
               disabled={!isValidCredentials()}
             >
               <Text style={styles.buttonText}>Connect</Text>
             </TouchableOpacity>
-          </View>
-        </View>
+        </View> */}
       </View>
-    </Modal>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   centeredView: {
+    position: "absolute",
+    width: "100%",
+    height: "100%",
     flex: 1,
     justifyContent: "center",
     alignItems: "center",

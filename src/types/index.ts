@@ -18,6 +18,11 @@ export type ZelloContact = {
    * When a contact is muted, messages from the contact will not play live, but they will still be in the history.
    */
   isMuted: boolean;
+  /**
+   * The display name of the contact. This should be used for UI purposes.
+   * Display names are not unique.
+   */
+  // displayName?: string;
 };
 
 /**

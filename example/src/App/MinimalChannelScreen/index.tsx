@@ -1,10 +1,12 @@
-import { useContext, useEffect, useState } from "react";
-import { DeviceEventEmitter, StyleSheet, Text, View } from "react-native";
+import { useCallback, useContext, useEffect, useState } from "react";
+import { StyleSheet, Text, View } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import { ChannelsContext, ConnectionContext, IncomingVoiceMessageContext, OutgoingVoiceMessageContext, SdkContext, SelectedContactContext } from "../App";
-import ConnectionModal from "../components/modal/ConnectionModal";
-import AlertModal from "../components/modal/AlertModal";
+import { ConnectionContext, IncomingVoiceMessageContext, OutgoingVoiceMessageContext, SdkContext } from "../../App";
+import AlertModal from "../../components/modal/AlertModal";
 
+import { NavigationProp, useFocusEffect } from "@react-navigation/native";
+import { useNavigationBar } from "../../context/NavigationBarContext";
+import { useKeyEvent } from "../../context/KeyEventContext";
 interface ChannelDetails {
   channel: string;
   action: "mic-outline" | "mic" | "mic-off" | "volume-high";
@@ -13,60 +15,62 @@ interface ChannelDetails {
   last: string;
 }
 
-const MinimalChannelScreen = () => {
+interface MinimalChannelScreenProps {
+  navigation: NavigationProp<any>;
+}
+
+const MinimalChannelScreen = ({ navigation }: MinimalChannelScreenProps) => {
   const sdk = useContext(SdkContext);
+  const { selectedContact } = useContext(SdkContext);
   const connectionContext = useContext(ConnectionContext);
   const incomingVoiceMessage = useContext(IncomingVoiceMessageContext);
   const outgoingVoiceMessage = useContext(OutgoingVoiceMessageContext);
-  const channels = useContext(ChannelsContext);
+  const { keyEvent } = useKeyEvent();
+  const { resetNav, setNav } = useNavigationBar();
 
   const [channelDetails, setChannelDetails] = useState<ChannelDetails>({
-    channel: sdk.selectedContact?.name || "",
+    // @ts-ignore
+    channel: selectedContact?.displayName || selectedContact?.name || "",
     action: "mic-outline",
     actionColor: "#ef5e14",
     current: "",
     last: "",
   });
-  const [keyEvent, setKeyEvent] = useState<null | number>(null);
+  const [alertDialog, setAlertDialog] = useState({
+    count: 3,
+  });
   const [alertInterval, setAlertInterval] = useState<NodeJS.Timeout | null>(null);
   const [showAlertDialog, setShowAlertDialog] = useState(false);
   const { channel, action, actionColor, current, last } = channelDetails;
 
-  useEffect(() => {
-    const keyDownListener = DeviceEventEmitter.addListener("KeyEventDown", (keyCode) => {
-      if (keyCode === 295) {
-        setKeyEvent(keyCode);
-      }
-    });
-
-    const keyUpListener = DeviceEventEmitter.addListener("KeyEventUp", (keyCode) => {
-      if (keyCode === 295) {
-        setKeyEvent(null);
-      }
-    });
-
-    console.log("SDK", sdk.selectedContact);
-
-    // Cleanup function to remove listeners
-    return () => {
-      keyDownListener.remove();
-      keyUpListener.remove();
-      clearAlertInterval(); // Clear interval on component unmount
-    };
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      resetNav();
+      setNav("second", "Scan");
+      setNav("third", "Alert");
+      return () => {};
+    }, [])
+  );
 
   useEffect(() => {
-    if (!sdk.selectedContact && channels.length > 0) {
-      sdk.setSelectedContact(channels[1]);
+    if (!connectionContext.isConnected && !connectionContext.isConnecting && !selectedContact) {
+      navigation.navigate("login");
+    }
+  }, [connectionContext]);
+
+  useEffect(() => {
+    if (!selectedContact && sdk.channels.length > 0) {
+      sdk.setSelectedContact(sdk.channels[1]);
     }
   }, [connectionContext]);
 
   useEffect(() => {
     setChannelDetails((prev) => ({
       ...prev,
-      channel: sdk.selectedContact?.name || "",
+      //@ts-ignore
+      channel: selectedContact?.displayName || selectedContact?.name || "",
     }));
-  }, [sdk.selectedContact]);
+  }, [selectedContact]);
 
   useEffect(() => {
     if (outgoingVoiceMessage) {
@@ -101,8 +105,14 @@ const MinimalChannelScreen = () => {
   }, [incomingVoiceMessage]);
 
   useEffect(() => {
-    if (keyEvent === 295) {
+    if (keyEvent === null) {
+      return;
+    } else if (keyEvent === 295) {
       handleSendAlert();
+    } else if (keyEvent >= 7 && keyEvent <= 16) {
+      navigation.navigate("list-contacts");
+    } else if (keyEvent === 294) {
+      navigation.navigate("list-scan");
     } else {
       clearAlertInterval();
     }
@@ -110,20 +120,20 @@ const MinimalChannelScreen = () => {
 
   const handleSendAlert = () => {
     let count = 3; // Set the countdown starting value
-    // setShowAlertDialog(true); // Show the alert dialog
+    setAlertDialog({ count: 3 });
     setShowAlertDialog(true);
 
     const interval = setInterval(() => {
       count -= 1;
+      setAlertDialog({ count });
       console.log(count);
       if (count <= 0) {
+        sdk.sendAlert(sdk.channels[0], `Emergency at: ${new Date().toLocaleTimeString()}`);
         clearAlertInterval();
         clearInterval(interval);
-        console.log("Alert Sent");
       }
     }, 1000);
 
-    console.log("Alert Interval", interval);
     setAlertInterval(interval);
   };
 
@@ -131,15 +141,7 @@ const MinimalChannelScreen = () => {
     setShowAlertDialog(false); // Hide the alert dialog
     if (alertInterval) {
       clearInterval(alertInterval);
-      console.log("Alert Interval Cleared");
     }
-  };
-
-  const handleConnect = (username: string, password: string, network: string) => {
-    sdk.disconnect();
-    setTimeout(() => {
-      sdk.connect({ network, username, password });
-    }, 100);
   };
 
   return (
@@ -155,9 +157,8 @@ const MinimalChannelScreen = () => {
         {last && <Text style={styles.lastText}>Last: {last}</Text>}
         <Text style={styles.userText}>PA-25 {keyEvent}</Text>
       </View>
-      <ConnectionModal onConnect={handleConnect} onClose={() => {}} visible={!connectionContext.isConnected && !connectionContext.isConnecting && !sdk.selectedContact} />
-     {showAlertDialog && <AlertModal channel={channel} />}
-     {/* <AlertModal /> */}
+      {showAlertDialog && <AlertModal channel={channel} count={alertDialog.count} />}
+      {/* <AlertModal /> */}
     </>
   );
 };
