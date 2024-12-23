@@ -97,6 +97,7 @@ function ScanIcon({ status, noDisconnect }: ScanIconProps) {
       iconName = "radio-button-on";
       iconColor = "#00ff00";
       break;
+    case "connecting":
     case "disconnected":
       iconName = "radio-button-off";
       iconColor = "#00ff00";
