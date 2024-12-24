@@ -1,13 +1,13 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { Text, StyleSheet, View, FlatList, TouchableOpacity } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import { ZelloChannel, ZelloChannelConnectionStatus } from "@zelloptt/react-native-zello-sdk";
+import { NavigationProp, useFocusEffect } from "@react-navigation/native";
 
 import { SdkContext } from "../../App";
-import { useKeyEvent } from "../../context/KeyEventContext";
-
-import { NavigationProp, useFocusEffect } from "@react-navigation/native";
 import { useNavigationBar } from "../../context/NavigationBarContext";
-import { ZelloChannel, ZelloChannelConnectionStatus } from "../../../../lib/typescript/module/src/types";
+import { useKeyEvent } from "../../context/KeyEventContext";
+import { useUserChannelGroup } from "../../context/UserChannelGroupContext";
 
 interface MinimalScanListProps {
   navigation: NavigationProp<any>;
@@ -26,15 +26,16 @@ interface ScanIconProps {
 }
 
 export default function MinimalScanList({ navigation }: MinimalScanListProps) {
-  const { channels, disconnectChannel, connectChannel } = useContext(SdkContext);
-  const { resetNav, setNav } = useNavigationBar();
-  const [focused, setFocused] = useState(0);
+  const { disconnectChannel, connectChannel } = useContext(SdkContext);
+  const { setNavigation } = useNavigationBar();
   const { keyEvent } = useKeyEvent();
+  const { channels } = useUserChannelGroup();
+
+  const [focused, setFocused] = useState(0);
 
   useFocusEffect(
     useCallback(() => {
-      resetNav();
-      setNav("second", "");
+      setNavigation("", "", "");
       return () => {};
     }, [])
   );

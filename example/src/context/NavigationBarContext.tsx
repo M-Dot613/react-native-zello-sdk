@@ -7,44 +7,62 @@ interface NavigationBarContextType {
     second: string;
     third: string;
   };
-  setNav: (key: "first" | "second" | "third", value: string) => void;
-  resetNav: () => void;
+  setNavigation: (first: string, second: string, third: string) => void;
+  resetNavigation: () => void;
+  setNavigationItem: (index: 1 | 2 | 3, value: string) => void;
 }
-
-// Create Context with a default value of `undefined` to enforce proper usage
-const NavigationBarContext = createContext<NavigationBarContextType | undefined>(undefined);
 
 // Define the props for the provider
 interface NavigationBarProviderProps {
   children: ReactNode;
 }
 
+// Create Context with a default value of `undefined` to enforce proper usage
+const NavigationBarContext = createContext<NavigationBarContextType | undefined>(undefined);
+
 // Context Provider Component
 export const NavigationBarProvider: React.FC<NavigationBarProviderProps> = ({ children }) => {
-  const [items, setNavs] = useState<{ first: string; second: string; third: string }>({
-    first: " ",
-    second: " ",
-    third: "Third",
+  const [navItems, setNavItems] = useState<NavigationBarContextType["items"]>({
+    first: "",
+    second: "",
+    third: "",
   });
 
-  // Generic setter function to update any of the items
-  const setNav = (key: "first" | "second" | "third", value: string) => {
-    setNavs((prevItems) => ({
-      ...prevItems,
-      [key]: value,
-    }));
+  // Set all three items
+  const setNavigation = (first: string, second: string, third: string) => {
+    setNavItems({
+      first,
+      second,
+      third,
+    });
   };
 
-  const resetNav = () => {
-    setNavs({
-      first: " ",
-      second: " ",
-      third: " ",
+  // Reset all items
+  const resetNavItems = () => {
+    setNavItems({
+      first: "",
+      second: "",
+      third: "",
+    });
+  };
+
+  // Set a specific item based on its index
+  const setNavigationItem = (index: 1 | 2 | 3, value: string) => {
+    setNavItems((prevState) => {
+      const newItems = { ...prevState };
+      if (index === 1) {
+        newItems.first = value;
+      } else if (index === 2) {
+        newItems.second = value;
+      } else if (index === 3) {
+        newItems.third = value;
+      }
+      return newItems;
     });
   };
 
   return (
-    <NavigationBarContext.Provider value={{ items, setNav, resetNav }}>
+    <NavigationBarContext.Provider value={{ items: navItems, setNavigation, resetNavigation: resetNavItems, setNavigationItem }}>
       {children}
     </NavigationBarContext.Provider>
   );

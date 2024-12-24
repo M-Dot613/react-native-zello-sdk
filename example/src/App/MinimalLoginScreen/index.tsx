@@ -1,19 +1,20 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { NavigationProp, useFocusEffect } from "@react-navigation/native";
+import { SdkContext } from "../../App";
 import TouchInput from "../../components/TouchInput";
 import { useNavigationBar } from "../../context/NavigationBarContext";
 import { useKeyEvent } from "../../context/KeyEventContext";
-import { NavigationProp, useFocusEffect } from "@react-navigation/native";
-import { ConnectionContext, SdkContext } from "../../App";
+import { useConnectionContext } from "../../context/ConnectionContext";
 
 interface ConnectDialogProps {
   navigation: NavigationProp<any>;
 }
 
 const MinimalLoginScreen = ({ navigation }: ConnectDialogProps) => {
-  const { resetNav, setNav } = useNavigationBar();
+  const { setNavigation } = useNavigationBar();
   const { connect, disconnect } = useContext(SdkContext);
-  const connectionContext = useContext(ConnectionContext);
+  const connectionContext = useConnectionContext();
   const { keyEvent } = useKeyEvent();
 
   const [credentials, setCredentials] = useState({
@@ -24,16 +25,17 @@ const MinimalLoginScreen = ({ navigation }: ConnectDialogProps) => {
 
   useFocusEffect(
     useCallback(() => {
-      resetNav();
-      setNav("third", "Connect");
-      return () => {
-      };
+      setNavigation("", "", "Connect");
+      return () => {};
     }, [])
   );
 
   useEffect(() => {
     if (connectionContext.isConnected) {
-      navigation.navigate("index");
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "index" }],
+      });
     }
   }, [connectionContext]);
 

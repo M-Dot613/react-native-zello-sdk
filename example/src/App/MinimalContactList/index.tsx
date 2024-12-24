@@ -12,7 +12,7 @@ export default function MinimalContactList({ navigation }: { navigation: Navigat
   const sdk = useContext(SdkContext);
   const { users, setSelectedContact } = useContext(SdkContext);
   const { keyEvent } = useKeyEvent();
-  const { resetNav, setNav } = useNavigationBar();
+  const { setNavigation } = useNavigationBar();
 
   const [showOffline, setShowOffline] = useState(false);
   const [filteredUsers, setFilteredUsers] = useState(users);
@@ -21,8 +21,7 @@ export default function MinimalContactList({ navigation }: { navigation: Navigat
 
   useFocusEffect(
     useCallback(() => {
-      resetNav();
-      setNav("second", "View All");
+      setNavigation("", "View All", "Back");
       return () => {
       };
     }, [])

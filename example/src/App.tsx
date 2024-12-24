@@ -1,3 +1,4 @@
+// keystore: 123456
 import React, { createContext, useCallback, useEffect, useRef, useState } from "react";
 import { Platform } from "react-native";
 import { PERMISSIONS, request, requestNotifications } from "react-native-permissions";
@@ -30,16 +31,18 @@ import { MenuProvider } from "react-native-popup-menu";
 import Toast from "react-native-toast-message";
 import { KeyEventProvider } from "./context/KeyEventContext";
 import { NavigationBarProvider } from "./context/NavigationBarContext";
+import { UserChannelGroupProvider } from "./context/UserChannelGroupContext";
+import { ConnectionContext, ConnectionContextProvider } from "./context/ConnectionContext";
 
 const sdk = Zello.getInstance();
 export const SdkContext = createContext<Zello>(sdk);
-export const ConnectionContext = createContext({
-  isConnected: false,
-  isConnecting: false,
-});
-export const UsersContext = createContext<ZelloUser[]>([]);
-export const ChannelsContext = createContext<ZelloChannel[]>([]);
-export const GroupConversationsContext = createContext<ZelloGroupConversation[]>([]);
+// export const ConnectionContext = createContext({
+//   isConnected: false,
+//   isConnecting: false,
+// });
+// export const UsersContext = createContext<ZelloUser[]>([]);
+// export const ChannelsContext = createContext<ZelloChannel[]>([]);
+// export const GroupConversationsContext = createContext<ZelloGroupConversation[]>([]);
 export const SelectedContactContext = createContext<ZelloContact | undefined>(undefined);
 export const AccountStatusContext = createContext<ZelloAccountStatus | undefined>(undefined);
 export const IncomingVoiceMessageContext = createContext<ZelloIncomingVoiceMessage | undefined>(undefined);
@@ -86,11 +89,11 @@ export const HistoryVoiceMessageContext = createContext<ZelloHistoryVoiceMessage
 export const ConsoleSettingsContext = createContext<ZelloConsoleSettings | undefined>(undefined);
 
 export default function App() {
-  const [isConnected, setIsConnected] = useState(false);
-  const [isConnecting, setIsConnecting] = useState(false);
-  const [users, setUsers] = useState<ZelloUser[]>([]);
-  const [channels, setChannels] = useState<ZelloChannel[]>([]);
-  const [groupConversations, setGroupConversations] = useState<ZelloGroupConversation[]>([]);
+  // const [isConnected, setIsConnected] = useState(false);
+  // const [isConnecting, setIsConnecting] = useState(false);
+  // const [users, setUsers] = useState<ZelloUser[]>([]);
+  // const [channels, setChannels] = useState<ZelloChannel[]>([]);
+  // const [groupConversations, setGroupConversations] = useState<ZelloGroupConversation[]>([]);
   const [selectedContact, setSelectedContact] = useState<ZelloContact | undefined>(undefined);
   const [accountStatus, setAccountStatus] = useState<ZelloAccountStatus | undefined>(undefined);
   const [incomingAudioMessage, setIncomingAudioMessage] = useState<ZelloIncomingVoiceMessage | undefined>(undefined);
@@ -150,26 +153,26 @@ export default function App() {
       },
     });
 
-    sdk.addListener(ZelloEvent.CONNECT_FAILED, (_state: ZelloConnectionState, error: ZelloConnectionError) => {
-      showToast(`Connection failed: ${error}`);
-      setIsConnecting(false);
-    });
-    sdk.addListener(ZelloEvent.CONNECT_STARTED, () => {
-      setIsConnecting(true);
-    });
-    sdk.addListener(ZelloEvent.CONNECT_SUCCEEDED, () => {
-      setIsConnecting(false);
-      setIsConnected(true);
-    });
-    sdk.addListener(ZelloEvent.DISCONNECTED, () => {
-      console.log("Disconnected");
-      setIsConnected(false);
-    });
-    sdk.addListener(ZelloEvent.CONTACT_LIST_UPDATED, () => {
-      setUsers(sdk.users);
-      setChannels(sdk.channels);
-      setGroupConversations(sdk.groupConversations);
-    });
+    // sdk.addListener(ZelloEvent.CONNECT_FAILED, (_state: ZelloConnectionState, error: ZelloConnectionError) => {
+    //   showToast(`Connection failed: ${error}`);
+    //   setIsConnecting(false);
+    // });
+    // sdk.addListener(ZelloEvent.CONNECT_STARTED, () => {
+    //   setIsConnecting(true);
+    // });
+    // sdk.addListener(ZelloEvent.CONNECT_SUCCEEDED, () => {
+    //   setIsConnecting(false);
+    //   setIsConnected(true);
+    // });
+    // sdk.addListener(ZelloEvent.DISCONNECTED, () => {
+    //   console.log("Disconnected");
+    //   setIsConnected(false);
+    // });
+    // sdk.addListener(ZelloEvent.CONTACT_LIST_UPDATED, () => {
+    //   setUsers(sdk.users);
+    //   setChannels(sdk.channels);
+    //   setGroupConversations(sdk.groupConversations);
+    // });
     sdk.addListener(ZelloEvent.SELECTED_CONTACT_CHANGED, () => {
       setSelectedContact(sdk.selectedContact);
     });
@@ -306,72 +309,78 @@ export default function App() {
     <>
       <MenuProvider>
         <SdkContext.Provider value={sdk}>
-          <ConnectionContext.Provider value={{ isConnected, isConnecting }}>
-            <UsersContext.Provider value={users}>
-              <ChannelsContext.Provider value={channels}>
-                <GroupConversationsContext.Provider value={groupConversations}>
-                  <SelectedContactContext.Provider value={selectedContact}>
-                    <AccountStatusContext.Provider value={accountStatus}>
-                      <IncomingVoiceMessageContext.Provider value={incomingAudioMessage}>
-                        <OutgoingVoiceMessageContext.Provider value={outgoingAudioMessage}>
-                          <LastIncomingImageMessageContext.Provider
-                            value={{
-                              message: lastIncomingImageMessage,
-                              clearMessage: clearLastIncomingImageMessage,
-                            }}
-                          >
-                            <LastIncomingAlertMessageContext.Provider
-                              value={{
-                                message: lastIncomingAlertMessage,
-                                clearMessage: clearLastIncomingAlertMessage,
-                              }}
-                            >
-                              <LastIncomingTextMessageContext.Provider
+          {/* <ConnectionContext.Provider value={{ isConnected, isConnecting }}> */}
+          {/* <UsersContext.Provider value={users}> */}
+          {/* <ChannelsContext.Provider value={channels}> */}
+          {/* <GroupConversationsContext.Provider value={groupConversations}> */}
+          <SelectedContactContext.Provider value={selectedContact}>
+            <AccountStatusContext.Provider value={accountStatus}>
+              <IncomingVoiceMessageContext.Provider value={incomingAudioMessage}>
+                <OutgoingVoiceMessageContext.Provider value={outgoingAudioMessage}>
+                  <LastIncomingImageMessageContext.Provider
+                    value={{
+                      message: lastIncomingImageMessage,
+                      clearMessage: clearLastIncomingImageMessage,
+                    }}
+                  >
+                    <LastIncomingAlertMessageContext.Provider
+                      value={{
+                        message: lastIncomingAlertMessage,
+                        clearMessage: clearLastIncomingAlertMessage,
+                      }}
+                    >
+                      <LastIncomingTextMessageContext.Provider
+                        value={{
+                          message: lastIncomingTextMessage,
+                          clearMessage: clearLastIncomingTextMessage,
+                        }}
+                      >
+                        <LastIncomingLocationMessageContext.Provider
+                          value={{
+                            message: lastIncomingLocationMessage,
+                            clearMessage: clearLastIncomingLocationMessage,
+                          }}
+                        >
+                          <EmergencyContext.Provider value={emergency}>
+                            <RecentsContext.Provider value={recents}>
+                              <HistoryContext.Provider
                                 value={{
-                                  message: lastIncomingTextMessage,
-                                  clearMessage: clearLastIncomingTextMessage,
+                                  history: history,
+                                  clearHistory: clearHistory,
+                                  setHistory: addHistory,
                                 }}
                               >
-                                <LastIncomingLocationMessageContext.Provider
-                                  value={{
-                                    message: lastIncomingLocationMessage,
-                                    clearMessage: clearLastIncomingLocationMessage,
-                                  }}
-                                >
-                                  <EmergencyContext.Provider value={emergency}>
-                                    <RecentsContext.Provider value={recents}>
-                                      <HistoryContext.Provider
-                                        value={{
-                                          history: history,
-                                          clearHistory: clearHistory,
-                                          setHistory: addHistory,
-                                        }}
-                                      >
-                                        <HistoryVoiceMessageContext.Provider value={historyVoiceMessage}>
-                                          <ConsoleSettingsContext.Provider value={consoleSettings}>
-                                            <NavigationBarProvider>
-                                              <KeyEventProvider>
-                                                <AppNavigator />
-                                              </KeyEventProvider>
-                                            </NavigationBarProvider>
-                                            {/* <Toast/> */}
-                                          </ConsoleSettingsContext.Provider>
-                                        </HistoryVoiceMessageContext.Provider>
-                                      </HistoryContext.Provider>
-                                    </RecentsContext.Provider>
-                                  </EmergencyContext.Provider>
-                                </LastIncomingLocationMessageContext.Provider>
-                              </LastIncomingTextMessageContext.Provider>
-                            </LastIncomingAlertMessageContext.Provider>
-                          </LastIncomingImageMessageContext.Provider>
-                        </OutgoingVoiceMessageContext.Provider>
-                      </IncomingVoiceMessageContext.Provider>
-                    </AccountStatusContext.Provider>
-                  </SelectedContactContext.Provider>
-                </GroupConversationsContext.Provider>
-              </ChannelsContext.Provider>
-            </UsersContext.Provider>
-          </ConnectionContext.Provider>
+                                <HistoryVoiceMessageContext.Provider value={historyVoiceMessage}>
+                                  <ConsoleSettingsContext.Provider value={consoleSettings}>
+                                    <ConnectionContextProvider>
+                                      <UserChannelGroupProvider>
+
+                                        <NavigationBarProvider>
+                                          <KeyEventProvider>
+                                            <AppNavigator />
+                                          </KeyEventProvider>
+                                        </NavigationBarProvider>
+                                        
+                                      </UserChannelGroupProvider>
+                                    </ConnectionContextProvider>
+                                    {/* <Toast/> */}
+                                  </ConsoleSettingsContext.Provider>
+                                </HistoryVoiceMessageContext.Provider>
+                              </HistoryContext.Provider>
+                            </RecentsContext.Provider>
+                          </EmergencyContext.Provider>
+                        </LastIncomingLocationMessageContext.Provider>
+                      </LastIncomingTextMessageContext.Provider>
+                    </LastIncomingAlertMessageContext.Provider>
+                  </LastIncomingImageMessageContext.Provider>
+                </OutgoingVoiceMessageContext.Provider>
+              </IncomingVoiceMessageContext.Provider>
+            </AccountStatusContext.Provider>
+          </SelectedContactContext.Provider>
+          {/* </GroupConversationsContext.Provider> */}
+          {/* </ChannelsContext.Provider> */}
+          {/* </UsersContext.Provider> */}
+          {/* </ConnectionContext.Provider> */}
         </SdkContext.Provider>
       </MenuProvider>
     </>

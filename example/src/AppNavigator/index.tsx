@@ -57,7 +57,7 @@ export default function AppNavigator() {
         <Stack.Screen name="index" component={MinimalChannelScreen} options={{ headerShown: false }} />
         <Stack.Screen name="list-contacts" component={MinimalContactList} options={{ headerShown: false }} />
         <Stack.Screen name="list-scan" component={MinimalScanList} options={{ headerShown: false }} />
-        <Stack.Screen name="Home" component={HomeTabs} options={{ headerShown: false }} />
+        {/* <Stack.Screen name="Home" component={HomeTabs} options={{ headerShown: false }} /> */}
       </Stack.Navigator>
       <NavigationBar />
     </NavigationContainer>

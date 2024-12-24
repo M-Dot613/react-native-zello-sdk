@@ -1,13 +1,17 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import { NavigationProp, useFocusEffect, useIsFocused } from "@react-navigation/native";
 import Sound from "react-native-sound";
 
-import { ConnectionContext, IncomingVoiceMessageContext, LastIncomingAlertMessageContext, OutgoingVoiceMessageContext, SdkContext } from "../../App";
+import { NavigationProp, useFocusEffect, useIsFocused } from "@react-navigation/native";
+import { ZelloContactType } from "@zelloptt/react-native-zello-sdk";
+
+import {  IncomingVoiceMessageContext, LastIncomingAlertMessageContext, OutgoingVoiceMessageContext, SdkContext } from "../../App";
 import { useNavigationBar } from "../../context/NavigationBarContext";
 import { useKeyEvent } from "../../context/KeyEventContext";
 import AlertModal from "../../components/modal/AlertModal";
+import { useUserChannelGroup } from "../../context/UserChannelGroupContext";
+import { useConnectionContext } from "../../context/ConnectionContext";
 
 interface ChannelDetails {
   channel: string;
@@ -16,6 +20,7 @@ interface ChannelDetails {
   current: string;
   last: string;
   alert: string;
+  type: ZelloContactType | "";
 }
 interface MinimalChannelScreenProps {
   navigation: NavigationProp<any>;
@@ -28,16 +33,17 @@ interface AlertDialog {
 
 const MinimalChannelScreen = ({ navigation }: MinimalChannelScreenProps) => {
   // Contexts and hooks
-  const { selectedContact, setSelectedContact, channels, sendAlert } = useContext(SdkContext);
-  const connectionContext = useContext(ConnectionContext);
+  const { selectedContact, setSelectedContact, sendAlert } = useContext(SdkContext);
+  const connectionContext = useConnectionContext();
   const incomingVoiceMessage = useContext(IncomingVoiceMessageContext);
   const outgoingVoiceMessage = useContext(OutgoingVoiceMessageContext);
   const lastIncomingAlertMessage = useContext(LastIncomingAlertMessageContext);
   const { keyEvent } = useKeyEvent();
-  const { resetNav, setNav } = useNavigationBar();
+  const { channels } = useUserChannelGroup();
+  const { setNavigation, setNavigationItem } = useNavigationBar();
 
   // States
-  const [{ channel, action, actionColor, current, last, alert }, setChannelDetails] = useState<ChannelDetails>({
+  const [{ channel, action, actionColor, current, last, alert, type }, setChannelDetails] = useState<ChannelDetails>({
     // @ts-ignore
     channel: selectedContact?.displayName || selectedContact?.name || "",
     action: "mic-outline",
@@ -45,6 +51,7 @@ const MinimalChannelScreen = ({ navigation }: MinimalChannelScreenProps) => {
     current: "",
     last: "",
     alert: "",
+    type: selectedContact?.type || "",
   });
   const [alertDialog, setAlertDialog] = useState<AlertDialog>({
     count: 3,
@@ -60,10 +67,7 @@ const MinimalChannelScreen = ({ navigation }: MinimalChannelScreenProps) => {
   // Effects
   useFocusEffect(
     useCallback(() => {
-      // Todo: make one function to set all navs
-      resetNav();
-      setNav("second", "Scan");
-      setNav("third", "Alert");
+      setNavigation("", "Scan", "Alert");
       return () => {};
     }, [])
   );
@@ -72,18 +76,24 @@ const MinimalChannelScreen = ({ navigation }: MinimalChannelScreenProps) => {
     if (!connectionContext.isConnected && !connectionContext.isConnecting && !selectedContact) {
       navigation.navigate("login");
     }
-    if (!selectedContact && channels.length > 0) {
-      setSelectedContact(channels[1]);
-    }
+
+    selectFallbackChannel();
   }, [connectionContext]);
 
   useEffect(() => {
     updateChannelDetails();
+    selectFallbackChannel();
   }, [selectedContact, incomingVoiceMessage, outgoingVoiceMessage, lastIncomingAlertMessage]);
 
   useEffect(() => {
     handleKeyEvent();
   }, [keyEvent]);
+
+  const selectFallbackChannel = () => {
+    if (!selectedContact && channels.length > 0) {
+      setSelectedContact(channels[1]);
+    }
+  };
 
   const updateChannelDetails = () => {
     setChannelDetails((prev) => ({
@@ -96,6 +106,7 @@ const MinimalChannelScreen = ({ navigation }: MinimalChannelScreenProps) => {
       actionColor: outgoingVoiceMessage ? "#ef5e14" : "#ef5e14",
       current: incomingVoiceMessage ? incomingVoiceMessage.channelUser?.displayName || "" : "",
       last: incomingVoiceMessage ? prev.current : prev.last,
+      type: selectedContact?.type || "",
     }));
 
     if (lastIncomingAlertMessage.message) {
@@ -184,7 +195,7 @@ const MinimalChannelScreen = ({ navigation }: MinimalChannelScreenProps) => {
 
   return (
     <>
-      <View style={styles.container}>
+      <View style={[styles.container, type === ZelloContactType.User && { borderColor: "rgb(216, 168, 56)", borderWidth: 5 }]}>
         <Text style={styles.channelText}>{channel}</Text>
 
         <View style={[styles.action, { backgroundColor: actionColor, borderRadius: 100 }]}>
